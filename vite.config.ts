@@ -13,6 +13,7 @@ export default defineConfig({
 			$client: path.resolve(__dirname, './src/api'),
 			'&client': path.resolve(__dirname, './src/config'),
 			'@common': path.resolve(__dirname, './common'),
+			'^common': path.resolve(__dirname, './common/validations'),
 		},
 	},
 });

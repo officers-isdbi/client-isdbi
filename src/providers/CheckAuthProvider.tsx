@@ -4,14 +4,14 @@ import { useLocation } from 'react-router';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import { getUserData } from '$client/endpoints/auth';
-import { useSetConfiguration } from '@/hooks/useConfiguration';
+import { useSetUser } from '@/hooks/useUser';
 
 export default function CheckAuthProvider({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
-	const { setConfiguration, removeUser } = useSetConfiguration();
+	const { setUser, removeUser } = useSetUser();
 	const location = useLocation();
 	const alreadyConnected = !!localStorage.getItem('User');
 	const GetUserData = useCallback(
@@ -21,7 +21,7 @@ export default function CheckAuthProvider({
 					if (!response.success) throw new Error(response.message);
 					const auth = response.data;
 					const { user } = auth;
-					setConfiguration({ user });
+					setUser(user);
 
 					if (
 						['/app'].some((loc) =>

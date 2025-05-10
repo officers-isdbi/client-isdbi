@@ -36,5 +36,9 @@
 		}
 	},
 	"include": ["src", "common"],
-	"exclude": ["common/models", "common/types/generated"]
+	"exclude": [
+		"common/models",
+		"common/types/generated",
+		"common/utils/backend"
+	]
 }

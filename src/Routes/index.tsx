@@ -1,4 +1,4 @@
-import useConfiguration from '@/hooks/useConfiguration';
+import { useUser } from '@/hooks/useUser';
 import { lazy, useMemo } from 'react';
 import { Navigate, type RouteObject, useRoutes } from 'react-router';
 
@@ -8,6 +8,7 @@ const Layout = lazy(() => import('@client/Layout'));
 const LogIn = lazy(() => import('@client/Pages/LogIn'));
 
 const Welcome = lazy(() => import('@client/Pages/Welcome'));
+const ChatBot = lazy(() => import('@client/Pages/ChatBot'));
 /* // Websites
 const WebsitesList = lazy(() => import('@client/Pages/Websites/WebsitesList'));
 const DisabledWebsitesList = lazy(
@@ -185,7 +186,7 @@ const Newsletters = lazy(() => import('@client/Pages/Newsletters'));
 const Promotions = lazy(() => import('@client/Pages/Promotions'));
  */
 const Router = () => {
-	const { user } = useConfiguration();
+	const { user } = useUser();
 
 	const routes = useMemo<RouteObject[]>(() => {
 		const routes: RouteObject[] = [
@@ -200,6 +201,8 @@ const Router = () => {
 					},
 					// welcome
 					{ path: 'welcome', Component: Welcome },
+					{ path: 'dashboard', Component: Welcome },
+					{ path: 'chat', Component: ChatBot },
 
 					// Error404
 					{ path: '*', Component: Error404 },

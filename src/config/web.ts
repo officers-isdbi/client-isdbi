@@ -1,7 +1,7 @@
 // API configuration
 export const API_ROUTE = new URL(
 	import.meta.env.OI_APP_API_ROUTE || '/api/v1',
-	import.meta.env.OI_APP_API_URL || 'http://localhost:7111'
+	import.meta.env.OI_APP_API_URL || 'http://localhost:49544'
 ).href;
 
 // languages configuration
