@@ -1,33 +1,15 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-	ChatBubble,
-	ChatBubbleMessage,
-	ChatBubbleTimestamp,
-} from '@/components/ui/chat/chat-bubble';
+import { useMutation } from '@tanstack/react-query';
+
 import { ChatInput } from '@/components/ui/chat/chat-input';
-import { ChatMessageList } from '@/components/ui/chat/chat-message-list';
 import { Button } from '@/components/ui/button';
 import { CornerDownLeft, Mic, Paperclip } from 'lucide-react';
-import { getChatHistory, sendChat } from '@/api/endpoints/chat';
+import { sendChat } from '@/api/endpoints/chat';
+import { useNavigate } from 'react-router';
 
-export default function ChatBot() {
-	const queryClient = useQueryClient();
+export default function NewChatBot() {
 	const [newMessage, setNewMessage] = useState('');
-
-	const { data: messages = [], isLoading: isFetchingHistory } = useQuery<
-		ChatMessageI[]
-	>({
-		queryKey: ['chatHistory'],
-		queryFn: async (): Promise<ChatMessageI[]> => {
-			const response = await getChatHistory();
-			if (response.success === false) {
-				throw new Error('Failed to fetch chat history');
-			}
-			return response.data;
-		},
-	});
-
+	const navigate = useNavigate();
 	const sendMessageMutation = useMutation<
 		ChatMessageI,
 		Error,
@@ -35,56 +17,15 @@ export default function ChatBot() {
 		{ previousMessages: ChatMessageI[] | undefined }
 	>({
 		mutationFn: async (message: string): Promise<ChatMessageI> => {
-			const response = await sendChat({ message });
+			const response = await sendChat({ message, id: 'new' });
 			if (response.success === false) {
 				throw new Error('Failed to send message');
 			}
+
 			return response.data;
 		},
-		/* 	onSuccess: (data) => {
-			queryClient.setQueryData<Message[]>(['chatHistory'], (old) => [
-				...(old || []),
-				{
-					id: data.id,
-					content: data.content,
-					sender: 'bot',
-					timestamp: new Date().toISOString(),
-				},
-			]);
-		}, */
-		onMutate: async (message) => {
-			await queryClient.cancelQueries({ queryKey: ['chatHistory'] });
-
-			const previousMessages = queryClient.getQueryData<ChatMessageI[]>([
-				'chatHistory',
-			]);
-
-			queryClient.setQueryData<ChatMessageI[]>(['chatHistory'], (old) => [
-				...(old || []),
-				{
-					id: Date.now().toString(),
-					content: message,
-					sender: 'user',
-					timestamp: new Date().toISOString(),
-				},
-			]);
-
-			return { previousMessages };
-		},
-		onError: (
-			_err: Error,
-			_message: string,
-			context?: { previousMessages: ChatMessageI[] | undefined }
-		) => {
-			if (context?.previousMessages) {
-				queryClient.setQueryData(
-					['chatHistory'],
-					context.previousMessages
-				);
-			}
-		},
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ['chatHistory'] });
+		onSuccess: (data) => {
+			navigate('/app/chat/' + data.conversationId);
 		},
 	});
 
@@ -97,28 +38,9 @@ export default function ChatBot() {
 
 	return (
 		<div className="flex flex-col h-full">
-			<ChatMessageList className="flex-1 overflow-y-auto">
-				{messages.map((message) => (
-					<ChatBubble
-						key={message.id}
-						variant={
-							message.sender === 'user' ? 'sent' : 'received'
-						}
-					>
-						<ChatBubbleMessage>{message.content}</ChatBubbleMessage>
-						<ChatBubbleTimestamp
-							timestamp={new Date(
-								message.timestamp
-							).toLocaleTimeString()}
-						/>
-					</ChatBubble>
-				))}
-				{isFetchingHistory && (
-					<ChatBubble variant="received">
-						<ChatBubbleMessage isLoading={true} />
-					</ChatBubble>
-				)}
-			</ChatMessageList>
+			<h1 className="text-4xl text-center mb-16">
+				Chat with our Assistance
+			</h1>
 			<form className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring p-1">
 				<ChatInput
 					value={newMessage}

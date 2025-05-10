@@ -9,6 +9,9 @@ const LogIn = lazy(() => import('@client/Pages/LogIn'));
 
 const Welcome = lazy(() => import('@client/Pages/Welcome'));
 const ChatBot = lazy(() => import('@client/Pages/ChatBot'));
+const ChatBotConversation = lazy(
+	() => import('@client/Pages/ChatConversation')
+);
 /* // Websites
 const WebsitesList = lazy(() => import('@client/Pages/Websites/WebsitesList'));
 const DisabledWebsitesList = lazy(
@@ -202,7 +205,16 @@ const Router = () => {
 					// welcome
 					{ path: 'welcome', Component: Welcome },
 					{ path: 'dashboard', Component: Welcome },
-					{ path: 'chat', Component: ChatBot },
+					{
+						path: 'chat',
+						children: [
+							{ index: true, Component: ChatBot },
+							{
+								path: ':conversationId',
+								Component: ChatBotConversation,
+							},
+						],
+					},
 
 					// Error404
 					{ path: '*', Component: Error404 },
